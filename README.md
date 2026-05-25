@@ -14,25 +14,24 @@ A script that tests all known Ollama Cloud models and reports which ones are fre
 
 ---
 
-## Usage / 使用方法
+## Setup / 配置步骤
+
+**Step 1 – Install dependencies / 第一步：安装依赖**
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Set your API key as an environment variable:
-将 API Key 设置为环境变量：
+**Step 2 – Create a `.env` file in the same folder / 第二步：在同级文件夹创建 `.env` 文件**
 
-```bash
-export OLLAMA_API_KEY=your_key_here       # macOS / Linux
-set    OLLAMA_API_KEY=your_key_here       # Windows
+```
+OLLAMA_API_KEY=your_key_here
 ```
 
-Or paste it directly into the top of `test_ollama_cloud.py`.
-或者直接填入 `test_ollama_cloud.py` 文件顶部的变量。
+The script reads the key from this file automatically.
+脚本会自动从该文件读取 API Key，无需其他设置。
 
-Then run:
-然后运行：
+**Step 3 – Run / 第三步：运行**
 
 ```bash
 python test_ollama_cloud.py
@@ -45,8 +44,8 @@ python test_ollama_cloud.py
 Tested on 2026-05-25 with a free account.
 测试时间：2026年5月25日，使用免费账户。
 
-After a full test run (41 models), Session usage was only 0.2% — the token consumption is negligible.
-完整测试 41 个模型后，Session usage 仅消耗 0.2%，token 消耗可忽略不计。
+A full test run (41 models) consumes approximately 0.2–0.3% of the free session quota — negligible.
+完整测试 41 个模型约消耗免费账户 Session usage 的 0.2–0.3%，可忽略不计。
 
 ### ✅ Free / 免费可用 (25 models)
 
@@ -103,5 +102,5 @@ kimi-k2:1t-cloud
 
 ## Notes / 说明
 
-Results may change as Ollama updates its free tier policy.
-结果可能随 Ollama 免费政策调整而变化，建议定期重新运行脚本确认。
+Results may change as Ollama updates its free tier policy. Re-run the script periodically to get the latest status.
+结果可能随 Ollama 免费政策调整而变化，建议定期重新运行脚本以获取最新状态。

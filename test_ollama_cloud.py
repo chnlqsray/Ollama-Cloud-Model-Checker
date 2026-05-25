@@ -4,8 +4,8 @@ Ollama Cloud Model Availability Checker
 Tests all known Ollama Cloud models against your account and reports which
 ones are accessible on the free tier.
 
-Usage:
-    1. Set your API key below (or via environment variable OLLAMA_API_KEY)
+Setup:
+    1. Create a .env file in the same folder with: OLLAMA_API_KEY=your_key_here
     2. Run:  python test_ollama_cloud.py
 
 Get your API key at: https://ollama.com/settings/keys
@@ -14,16 +14,16 @@ Get your API key at: https://ollama.com/settings/keys
 import os
 import time
 import requests
+from dotenv import load_dotenv
 
-# ── Set your Ollama Cloud API Key here ────────────────────────────────
-OLLAMA_API_KEY = os.environ.get("OLLAMA_API_KEY", "your_ollama_api_key_here")
-# ──────────────────────────────────────────────────────────────────────
+load_dotenv()  # Load variables from .env file into os.environ
+
+OLLAMA_API_KEY = os.environ.get("OLLAMA_API_KEY", "")
 
 BASE_URL  = "https://ollama.com/v1/chat/completions"
 TIMEOUT   = 40    # seconds per request (cold-start can be slow)
 SLEEP_SEC = 1.5   # pause between requests to respect concurrency limits
 
-# Full list of known Ollama Cloud models (as of May 2026)
 MODELS = [
     "gemma4:31b-cloud",
     "qwen3.5:cloud",
@@ -72,12 +72,7 @@ MODELS = [
 def test_model(model: str) -> tuple[str, str]:
     """
     Send a minimal 1-token request to check model availability.
-
-    Returns:
-        (status, detail) where status is one of:
-          "ok"           – model is accessible on your current plan
-          "subscription" – model requires a paid subscription (HTTP 403)
-          "error"        – unexpected error (timeout, 404, 429, etc.)
+    Returns (status, detail) where status is "ok", "subscription", or "error".
     """
     payload = {
         "model": model,
@@ -115,8 +110,8 @@ def main() -> None:
     print(f"Testing {len(MODELS)} models  |  {SLEEP_SEC}s delay between requests\n")
     print("=" * 65)
 
-    ok_list:  list[str]        = []
-    sub_list: list[str]        = []
+    ok_list:  list[str]             = []
+    sub_list: list[str]             = []
     err_list: list[tuple[str, str]] = []
 
     for i, model in enumerate(MODELS, 1):
@@ -136,7 +131,6 @@ def main() -> None:
         if i < len(MODELS):
             time.sleep(SLEEP_SEC)
 
-    # ── Summary ──────────────────────────────────────────────────────
     print("\n" + "=" * 65)
     print(f"✅  FREE / AVAILABLE  ({len(ok_list)} models):")
     for m in ok_list:
@@ -155,12 +149,11 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    if OLLAMA_API_KEY == "your_ollama_api_key_here":
+    if not OLLAMA_API_KEY:
         print(
-            "ERROR: API key not set.\n"
-            "Edit OLLAMA_API_KEY in this script, or set the environment variable:\n"
-            "    export OLLAMA_API_KEY=your_key   # macOS / Linux\n"
-            "    set OLLAMA_API_KEY=your_key       # Windows CMD\n"
+            "ERROR: API key not found.\n"
+            "Create a .env file in the same folder with this content:\n"
+            "    OLLAMA_API_KEY=your_key_here\n"
             "Get your key at: https://ollama.com/settings/keys"
         )
     else:
